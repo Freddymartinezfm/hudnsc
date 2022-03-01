@@ -1,13 +1,8 @@
 import org.openqa.selenium.By;
-import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.support.ui.FluentWait;
-import org.openqa.selenium.support.ui.Wait;
 
-import java.time.Duration;
-import java.util.function.Function;
+import java.util.Set;
 
 public class Dashboard {
     /**
@@ -17,61 +12,88 @@ public class Dashboard {
      */
 
 
-    public Dashboard(){
+    public WebDriver driver;
+    public Dashboard(WebDriver driver){
+        this.driver = driver;
 
     }
 
 
     public void login() throws InterruptedException {
-
-
-        System.setProperty("webdriver.chrome.driver", "src/chromedriver.exe");
-        WebDriver driver = new ChromeDriver();
-
-        // browser settings
-        driver.manage().window().maximize();
-
-        // open page
-        driver.get("https://hud-stage.hudnsc.org/eclass/index.cfm?login=true");
+        driver.get("https://hud-stage.hudnsc.org/evars/index.cfm?");
         Thread.sleep(500);
+
         WebElement login_btn = driver.findElement(By.id("main_dsp-login-btn"));
         Thread.sleep(500);
-        if (login_btn != null) login_btn.click();
 
+        if (login_btn != null) login_btn.click();
         WebElement login_email_field = driver.findElement(By.id("loginEmail"));
         Thread.sleep(1000);
-        login_email_field.sendKeys("freddy.martinez@hudnsc.org");
 
+        login_email_field.sendKeys("freddy.martinez@hudnsc.org");
         WebElement login_password_field = driver.findElement(By.id("loginPassword"));
         Thread.sleep(1000);
+
         login_password_field.sendKeys("Tara!234");
-
         driver.findElement(By.id("loginSubmit")).click();
-        // TODO: 1/19/2022 if fields are not null then submit
         Thread.sleep(1000);
 
-        var trainees = driver.findElement(By.xpath("//*[@id=\"navbar\"]/ul/li[3]/a"));
-        Thread.sleep(1000);
-        if (trainees.getText().length() > 0){
-            System.out.println("trainees clicked");
-            trainees.click();
-            Thread.sleep(1000);
-            trainees.findElement(By.cssSelector("#navbar > ul > li.nav-item.dropdown.show > ul > a:nth-child(3) > li")).click();
-            System.out.println("search clicked");
-
-            var container = driver.findElement(By.className("container"));
-            System.out.println();
+        Set<String> windows = driver.getWindowHandles();
+        System.out.println("Number of windows: "  + windows.size());
+    }
 
 
 
-
-
-
-
-            // TODO: 1/31/2022 create variable for the table that holds the fields
-
-
-        }
+    //public void login() throws InterruptedException {
+//
+//
+//        System.setProperty("webdriver.chrome.driver", "src/chromedriver.exe");
+//        WebDriver driver = new ChromeDriver();
+//
+//        // browser settings
+//        driver.manage().window().maximize();
+//
+//        // open page
+//        driver.get("https://hud-stage.hudnsc.org/eclass/index.cfm?login=true");
+//        Thread.sleep(500);
+//        WebElement login_btn = driver.findElement(By.id("main_dsp-login-btn"));
+//        Thread.sleep(500);
+//        if (login_btn != null) login_btn.click();
+//
+//        WebElement login_email_field = driver.findElement(By.id("loginEmail"));
+//        Thread.sleep(1000);
+//        login_email_field.sendKeys("freddy.martinez@hudnsc.org");
+//
+//        WebElement login_password_field = driver.findElement(By.id("loginPassword"));
+//        Thread.sleep(1000);
+//        login_password_field.sendKeys("Tara!234");
+//
+//        driver.findElement(By.id("loginSubmit")).click();
+//        // TODO: 1/19/2022 if fields are not null then submit
+//        Thread.sleep(1000);
+//
+//        var trainees = driver.findElement(By.xpath("//*[@id=\"navbar\"]/ul/li[3]/a"));
+//        Thread.sleep(1000);
+//        if (trainees.getText().length() > 0){
+//            System.out.println("trainees clicked");
+//            trainees.click();
+//            Thread.sleep(1000);
+//            trainees.findElement(By.cssSelector("#navbar > ul > li.nav-item.dropdown.show > ul > a:nth-child(3) > li")).click();
+//            System.out.println("search clicked");
+//
+//            var container = driver.findElement(By.className("container"));
+//            System.out.println();
+//
+//
+//
+//
+//
+//
+//
+//            // TODO: 1/31/2022 create variable for the table that holds the fields
+//
+//
+//        }
 
         // TODO: 1/31/2022 find search link and click
 
@@ -85,7 +107,7 @@ public class Dashboard {
 //                return driver.findElement(By.cssSelector("[id=finish] h4"));
 //            }
 //        });
-}
+//}
 
 }
 
