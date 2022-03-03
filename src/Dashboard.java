@@ -38,8 +38,19 @@ public class Dashboard {
         driver.findElement(By.id("loginSubmit")).click();
         Thread.sleep(1000);
 
-        Set<String> windows = driver.getWindowHandles();
-        System.out.println("Number of windows: "  + windows.size());
+
+        // open pending in diff tabs
+        var duo_iframe = driver.findElement(By.id("duo_iframe"));
+        driver.switchTo().frame(duo_iframe);
+        System.out.println(driver.getTitle());
+
+        Thread.sleep(1000);
+        driver.findElement(By.id("passcode")).click();
+        Thread.sleep(1000);
+        driver.findElement(By.xpath("//*[@id=\"message\"]")).click();
+
+//        var buttons = duo_iframe.findElements(By.xpath("//*[@id='auth_methods']/fieldset/div[1]/input"));
+//        System.out.println(buttons.size());
     }
 
 

@@ -11,31 +11,10 @@ public class MainActivity {
     public static void main(String[] args) throws InterruptedException {
         Dashboard dashboard = new Dashboard(init());
         dashboard.login();
-
-
         System.out.println(dashboard.driver.getCurrentUrl());
         System.out.println("successfully signed in ");
         System.out.println("Multifactor authentication login");
-
-        WebElement mfaexit = dashboard.driver.findElement(By.cssSelector("button.twostep-close"));
-        if (mfaexit == null) {
-            System.out.println();
-        } else {
-            System.out.println("Success");
-        mfaexit.click();
-
-        }
-
-
-
     }
-
-
-
-
-
-
-
 
     public static WebDriver init(){
 
