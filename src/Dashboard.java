@@ -1,14 +1,18 @@
 import com.sun.security.jgss.GSSUtil;
+import io.opentelemetry.sdk.autoconfigure.spi.ConfigurablePropagatorProvider;
 import net.jodah.failsafe.Fallback;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
+import javax.swing.*;
 import java.security.cert.TrustAnchor;
+import java.sql.Array;
 import java.sql.Struct;
-import java.util.InputMismatchException;
-import java.util.Scanner;
-import java.util.Set;
+import java.util.*;
+
+import static org.openqa.selenium.Keys.ENTER;
 
 public class Dashboard {
     /**
@@ -19,6 +23,8 @@ public class Dashboard {
 
 
     public WebDriver driver;
+    int MFA_CODE = 0;
+
     public Dashboard(WebDriver driver){
         this.driver = driver;
 
@@ -29,23 +35,31 @@ public class Dashboard {
 
     public boolean login() throws InterruptedException {
         driver.get("https://hud-stage.hudnsc.org/evars/index.cfm?");
+
+        Agent user = new Agent();
+        user.email = "freddy.martinez@hudnsc.org";
+        user.password = "Tara!234";
+
         Thread.sleep(500);
+
+        System.out.println(driver.getCurrentUrl());
+        System.out.println(driver.getTitle());
+        // browser settings
+        driver.manage().window().maximize();
 
         WebElement login_btn = driver.findElement(By.id("main_dsp-login-btn"));
         Thread.sleep(500);
 
-        if (login_btn == null){
-            return false;
-        }
+        if (login_btn == null) return false;
         login_btn.click();
         WebElement login_email_field = driver.findElement(By.id("loginEmail"));
         Thread.sleep(500);
 
-        login_email_field.sendKeys("freddy.martinez@hudnsc.org");
+        login_email_field.sendKeys(user.email);
         WebElement login_password_field = driver.findElement(By.id("loginPassword"));
         Thread.sleep(500);
 
-        login_password_field.sendKeys("Tara!234");
+        login_password_field.sendKeys(user.password);
         driver.findElement(By.id("loginSubmit")).click();
         Thread.sleep(2000);
 
@@ -91,6 +105,7 @@ public class Dashboard {
         // open duo iframe
         var duo_iframe = driver.findElement(By.id("duo_iframe"));
         driver.switchTo().frame(duo_iframe);
+        Thread.sleep(1000);
         driver.findElement(By.xpath("//*[@id=\"passcode\"]")).click();
         Thread.sleep(1000);
         driver.findElement(By.xpath("//*[@id=\"message\"]")).click();
@@ -103,10 +118,61 @@ public class Dashboard {
 
         Thread.sleep(3000);
         driver.findElement(By.cssSelector("#auth_methods > fieldset > div.passcode-label.row-label > div > input")).sendKeys(mfa_code);
+
+        Thread.sleep(1000);
         driver.findElement(By.cssSelector("#passcode")).click();
+
+
 
         return true;
     }
+
+    public void pending_users() throws InterruptedException {
+        var table =  driver.findElement(By.xpath("//*[@id=\"trainees_dt\"]"));
+        int row_count = table.findElements(By.tagName("tr")).size();
+        var rows =  table.findElements(By.tagName("tr"));
+        var cols  = table.findElements(By.tagName("td"));
+        System.out.println("Rows: " + row_count);
+        int col_count = table.findElements(By.tagName("td")).size();
+        List<String> pending_account_names = new ArrayList<String>();
+
+        for (int i = 1; i < row_count; i++){
+//            for (var d = 0; d < 11; d++){
+                var row_data =  rows.get(i).findElements(By.tagName("td"));
+//                Thread.sleep(1000);
+                String cell_text_value = row_data.get(2).getText().toLowerCase();
+                Thread.sleep(1000);
+            var control_click = Keys.chord(Keys.CONTROL, ENTER);
+            row_data.get(10).findElement(By.tagName("a")).sendKeys(control_click);
+            Thread.sleep(1000);
+
+//                edit_profile.click();
+//                Thread.sleep(1000);
+
+                pending_account_names.add(cell_text_value);
+
+//            }
+            System.out.println();
+        }
+        display_pending_list(pending_account_names);
+    }
+
+    private void display_pending_list(List<String> names) {
+        for (var n : names){
+            System.out.print(n);
+            System.out.println("\t");
+        }
+    }
+
+
+
+    private void display_update_pending_list(List<String> names) {
+        for (var n : names){
+            System.out.print(n);
+            System.out.println("\t");
+        }
+    }
+
 
     public void search() throws InterruptedException {
         Thread.sleep(500);
@@ -115,6 +181,10 @@ public class Dashboard {
         driver.findElement(By.cssSelector("#keyword")).sendKeys("pending");
         Thread.sleep(500);
 
+        driver.findElement(By.id("traineesSearchSubmit")).click();
+        Thread.sleep(500);
+
+        pending_users();
     }
 }
 
