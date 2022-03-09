@@ -23,6 +23,7 @@ public class Dashboard {
 
 
     public WebDriver driver;
+
     int MFA_CODE = 0;
 
     public Dashboard(WebDriver driver){
@@ -31,21 +32,50 @@ public class Dashboard {
     }
 
 
+    public Set<String> check_lender_admin() throws InterruptedException {
+
+
+
+        Set<String> windows = driver.getWindowHandles();
+        System.out.println("Windows:" + driver.getWindowHandles().size());
+        Iterator<String> it = windows.iterator();
+
+        var parent = it.next();
+
+        while (it.hasNext()){
+            System.out.println("Switching windows ");
+            driver.switchTo().window(it.next());
+            Thread.sleep(5000);
+            System.out.println(driver.findElement(By.cssSelector("#lenderAdminDropdown")));
+
+//            System.out.println(driver.findElement(By.id("lenderAdminDropdown")).isDisplayed());
+//            System.out.println(driver.findElement(By.id("lenderAdminDropdown")).isEnabled());
+
+//            if(driver.findElement(By.id("lenderAdminDropdown")).isDisplayed()){
+//                System.out.println("User has lender admin");
+//                //TODO remove from list of pending accounts
+//
+//                break;
+//            } else {
+//                //TODO proceed with approving account
+//            }
+
+
+
+        }
+
+
+        return windows;
+    }
 
 
     public boolean login() throws InterruptedException {
-        driver.get("https://hud-stage.hudnsc.org/evars/index.cfm?");
+
+//        List<Agent> users =  get_agents();
 
         Agent user = new Agent();
         user.email = "freddy.martinez@hudnsc.org";
         user.password = "Tara!234";
-
-        Thread.sleep(500);
-
-        System.out.println(driver.getCurrentUrl());
-        System.out.println(driver.getTitle());
-        // browser settings
-        driver.manage().window().maximize();
 
         WebElement login_btn = driver.findElement(By.id("main_dsp-login-btn"));
         Thread.sleep(500);
@@ -79,21 +109,6 @@ public class Dashboard {
 
         }
         return true;
-
-
-////*[@id="navbar"]/ul/li[3]/ul/a[3]/li
-//        var trainees = driver.findElement(By.xpath("//*[@id=\"navbar\"]/ul/li[3]/a"));
-//        Thread.sleep(1000);
-//        if (trainees.getText().length() > 0){
-//            System.out.println("trainees clicked");
-//            trainees.click();
-//            Thread.sleep(1000);
-//            trainees.findElement(By.cssSelector("#navbar > ul > li.nav-item.dropdown.show > ul > a:nth-child(3) > li")).click();
-//            System.out.println("search clicked");
-//
-//            var container = driver.findElement(By.className("container"));
-//            System.out.println();
-//
     }
 
 
@@ -110,67 +125,51 @@ public class Dashboard {
         Thread.sleep(1000);
         driver.findElement(By.xpath("//*[@id=\"message\"]")).click();
         Thread.sleep(2000);
-        System.out.println("Please provide the  code.  ");
+        System.out.println("Please provide the code.");
 
         Scanner sc = new Scanner(System.in);
         String mfa_code = sc.nextLine();
-//        System.out.println(mfa_code);
 
         Thread.sleep(3000);
         driver.findElement(By.cssSelector("#auth_methods > fieldset > div.passcode-label.row-label > div > input")).sendKeys(mfa_code);
 
         Thread.sleep(1000);
         driver.findElement(By.cssSelector("#passcode")).click();
-
-
-
         return true;
     }
 
     public void pending_users() throws InterruptedException {
-        var table =  driver.findElement(By.xpath("//*[@id=\"trainees_dt\"]"));
+        WebElement table =  driver.findElement(By.xpath("//*[@id=\"trainees_dt\"]"));
         int row_count = table.findElements(By.tagName("tr")).size();
         var rows =  table.findElements(By.tagName("tr"));
         var cols  = table.findElements(By.tagName("td"));
         System.out.println("Rows: " + row_count);
         int col_count = table.findElements(By.tagName("td")).size();
         List<String> pending_account_names = new ArrayList<String>();
+        List<WebElement> row_data = null;
 
-        for (int i = 1; i < row_count; i++){
-//            for (var d = 0; d < 11; d++){
-                var row_data =  rows.get(i).findElements(By.tagName("td"));
-//                Thread.sleep(1000);
-                String cell_text_value = row_data.get(2).getText().toLowerCase();
-                Thread.sleep(1000);
-            var control_click = Keys.chord(Keys.CONTROL, ENTER);
-            row_data.get(10).findElement(By.tagName("a")).sendKeys(control_click);
+        for (int i = 1; i < 3; i++){
+            row_data =  rows.get(i).findElements(By.tagName("td"));
+            String cell_text_value = row_data.get(2).getText().toLowerCase();
             Thread.sleep(1000);
 
-//                edit_profile.click();
-//                Thread.sleep(1000);
-
-                pending_account_names.add(cell_text_value);
-
-//            }
+            Thread.sleep(1000);
+            pending_account_names.add(cell_text_value);
             System.out.println();
         }
-        display_pending_list(pending_account_names);
-    }
 
-    private void display_pending_list(List<String> names) {
-        for (var n : names){
-            System.out.print(n);
+        var control_click = Keys.chord(Keys.CONTROL, ENTER);
+        System.out.println(driver.getTitle());
+        System.out.println(row_data.get(10).findElement(By.tagName("a")).getText());
+        row_data.get(10).findElement(By.tagName("a")).sendKeys(control_click);
+        Thread.sleep(500);
+        System.out.println();
+        for (var n : pending_account_names){
+            System.out.print("Checking: \t" + n);
             System.out.println("\t");
         }
-    }
 
-
-
-    private void display_update_pending_list(List<String> names) {
-        for (var n : names){
-            System.out.print(n);
-            System.out.println("\t");
-        }
+        check_lender_admin();
     }
 
 
@@ -184,7 +183,9 @@ public class Dashboard {
         driver.findElement(By.id("traineesSearchSubmit")).click();
         Thread.sleep(500);
 
-        pending_users();
+
+
+
     }
 }
 
