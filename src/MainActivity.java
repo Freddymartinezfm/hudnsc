@@ -11,34 +11,38 @@ import java.util.Set;
 
 public class MainActivity {
     public static final String STAGE_ENV = "https://hud-stage.hudnsc.org/evars/index.cfm?";
-    public static final String PROD_ENV = "https://hud.hudnsc.org/";
+    public static final String PROD_ENV = "https://hud.hudnsc.org/index.cfm?";
 
 
 
     public static void main(String[] args) throws InterruptedException {
         Dashboard dashboard = new Dashboard(init());
-        dashboard.driver.get(PROD_ENV);
+        dashboard.driver.get(STAGE_ENV);
 
         Thread.sleep(500);
 
         System.out.println( dashboard.driver.getCurrentUrl());
         System.out.println( dashboard.driver.getTitle());
         // browser settings
-        dashboard.driver.manage().window().maximize();
         ;
         if (dashboard.login()){
-            System.out.println("Multifactor authentication login");
+            System.out.println("[+]Multifactor authentication login");
         }
 
         dashboard.search(); // todo should return number of results
-        dashboard.pending_users(); //todo should return number of results
-//        Set<String> real_pending_users =  dashboard.check_lender_admin();
-
+        var users = dashboard.pending_users(); //todo should return number of results
+        System.out.println("[+]Number of pending users: " + users.size());
+        System.out.println("[+] Ready for processing:  ");
+        for (var user : users){
+            System.out.println("\t" + user);
+        }
     }
 
     public static WebDriver init(){
         System.setProperty("webdriver.chrome.driver", "src/chromedriver.exe");
         WebDriver driver = new ChromeDriver();
+        driver.manage().window().maximize();
+
         return driver;
 
     }
