@@ -36,6 +36,9 @@ public class MainActivity {
         for (var user : users){
             System.out.println("\t" + user);
         }
+
+        dashboard.process_list();
+
     }
 
     public static WebDriver init(){

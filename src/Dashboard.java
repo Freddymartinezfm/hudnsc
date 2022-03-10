@@ -141,11 +141,18 @@ public class Dashboard {
             index--;
             if (admin.size() != 1) {
                 filtered_list.add(full_list.get(index));
+                // todo users on this list need to be verified and activated or denied
             } else {
                 System.out.println("lender admin present.");
             }
         }
         return filtered_list;
+    }
+
+
+    public void process_list(){
+        System.out.println("Dashboard.process_list");
+
     }
 
 
